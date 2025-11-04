@@ -28,7 +28,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
-    secret: 'servilimp-secret-key-2025',
+    secret: process.env.SESSION_SECRET || 'servilimp-secret-key-2025-change-in-production',
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
@@ -95,34 +95,31 @@ app.get('/api/session', (req, res) => {
 });
 
 // ====== Client Management Routes ======
+// Note: Most data operations are handled client-side using Firebase SDK
+// These endpoints are kept for potential server-side operations
 
-// Get all clients
 app.get('/api/clients', requireAuth, (req, res) => {
     res.json({ message: 'Use Firebase client SDK to fetch clients from Firestore' });
 });
 
-// Create client
 app.post('/api/clients', requireRole('admin', 'supervisor'), (req, res) => {
     res.json({ message: 'Use Firebase client SDK to create clients in Firestore' });
 });
 
 // ====== Objective Management Routes ======
 
-// Get all objectives
 app.get('/api/objectives', requireAuth, (req, res) => {
     res.json({ message: 'Use Firebase client SDK to fetch objectives from Firestore' });
 });
 
 // ====== Supply Management Routes ======
 
-// Get all supplies
 app.get('/api/supplies', requireAuth, (req, res) => {
     res.json({ message: 'Use Firebase client SDK to fetch supplies from Firestore' });
 });
 
 // ====== Messaging Routes ======
 
-// Get messages
 app.get('/api/messages', requireAuth, (req, res) => {
     res.json({ message: 'Use Firebase client SDK to fetch messages from Firestore' });
 });

@@ -74,8 +74,9 @@ let firebaseLoaded = false;
         // Create default admin user if it doesn't exist
         async function createDefaultAdmin() {
             try {
-                const adminEmail = 'admin@servilimp.local';
-                const adminPassword = 'admin123';
+                // IMPORTANT: Change these credentials in production!
+                const adminEmail = process.env.ADMIN_EMAIL || 'admin@servilimp.local';
+                const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
                 
                 // Check if admin exists
                 const adminDoc = await getDoc(doc(db, 'users', 'admin'));

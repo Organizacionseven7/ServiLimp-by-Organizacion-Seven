@@ -531,7 +531,10 @@ async function loadCleaningRecords() {
         tbody.innerHTML = '';
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            const date = data.cleaned_at ? new Date(data.cleaned_at.toDate()).toLocaleString('es-AR') : '-';
+            // Safely handle Firestore Timestamp conversion
+            const date = data.cleaned_at && data.cleaned_at.toDate ? 
+                new Date(data.cleaned_at.toDate()).toLocaleString('es-AR') : 
+                (data.cleaned_at ? new Date(data.cleaned_at).toLocaleString('es-AR') : '-');
             
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -582,7 +585,10 @@ async function loadMessagesList() {
         messagesList.innerHTML = '';
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            const date = data.created_at ? new Date(data.created_at.toDate()).toLocaleString('es-AR') : '-';
+            // Safely handle Firestore Timestamp conversion
+            const date = data.created_at && data.created_at.toDate ? 
+                new Date(data.created_at.toDate()).toLocaleString('es-AR') : 
+                (data.created_at ? new Date(data.created_at).toLocaleString('es-AR') : '-');
             const unreadClass = data.read ? '' : 'unread';
             
             const messageDiv = document.createElement('div');

@@ -33,12 +33,18 @@ cd ServiLimp-by-Organizacion-Seven
 npm install
 ```
 
-3. Iniciar el servidor
+3. (Opcional) Configurar variables de entorno
+```bash
+cp .env.example .env
+# Editar .env con tus valores
+```
+
+4. Iniciar el servidor
 ```bash
 npm start
 ```
 
-4. Abrir en el navegador
+5. Abrir en el navegador
 ```
 http://localhost:3000
 ```

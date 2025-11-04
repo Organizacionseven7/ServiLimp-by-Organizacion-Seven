@@ -1,4 +1,6 @@
 // Firebase configuration
+// IMPORTANT: In production, move these credentials to environment variables
+// For development purposes, they are here for easy setup
 const firebaseConfig = {
   apiKey: "AIzaSyAxYYiHFAgq_aEAtkxRmIFKdxoBiMB5DYE",
   authDomain: "servilimp-8b5df.firebaseapp.com",
