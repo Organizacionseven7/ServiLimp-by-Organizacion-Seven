@@ -11,6 +11,30 @@ const db = getFirestore(app);
 let currentUser = null;
 let currentUserData = null;
 
+// Utility function to safely format Firestore timestamps
+function formatFirestoreDate(timestamp, locale = 'es-AR') {
+    if (!timestamp) return '-';
+    
+    try {
+        // Check if it's a Firestore Timestamp object
+        if (timestamp.toDate && typeof timestamp.toDate === 'function') {
+            return new Date(timestamp.toDate()).toLocaleString(locale);
+        }
+        // Check if it's already a Date object or timestamp
+        if (timestamp instanceof Date || typeof timestamp === 'number') {
+            return new Date(timestamp).toLocaleString(locale);
+        }
+        // Try to parse as string
+        if (typeof timestamp === 'string') {
+            return new Date(timestamp).toLocaleString(locale);
+        }
+    } catch (error) {
+        console.error('Error formatting date:', error);
+    }
+    
+    return '-';
+}
+
 // Check authentication
 onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -531,10 +555,7 @@ async function loadCleaningRecords() {
         tbody.innerHTML = '';
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            // Safely handle Firestore Timestamp conversion
-            const date = data.cleaned_at && data.cleaned_at.toDate ? 
-                new Date(data.cleaned_at.toDate()).toLocaleString('es-AR') : 
-                (data.cleaned_at ? new Date(data.cleaned_at).toLocaleString('es-AR') : '-');
+            const date = formatFirestoreDate(data.cleaned_at);
             
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -585,10 +606,7 @@ async function loadMessagesList() {
         messagesList.innerHTML = '';
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            // Safely handle Firestore Timestamp conversion
-            const date = data.created_at && data.created_at.toDate ? 
-                new Date(data.created_at.toDate()).toLocaleString('es-AR') : 
-                (data.created_at ? new Date(data.created_at).toLocaleString('es-AR') : '-');
+            const date = formatFirestoreDate(data.created_at);
             const unreadClass = data.read ? '' : 'unread';
             
             const messageDiv = document.createElement('div');

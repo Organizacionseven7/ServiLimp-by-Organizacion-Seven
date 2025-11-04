@@ -61,6 +61,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // 2. SameSite=strict cookie policy
 // 3. Session-based auth verification
 // See SECURITY.md for detailed explanation
+//
+// IMPORTANT: In production, always set SESSION_SECRET environment variable
+// to a cryptographically secure random string (32+ characters)
+// Example: openssl rand -base64 32
 app.use(session({
     secret: process.env.SESSION_SECRET || 'servilimp-secret-key-2025-change-in-production',
     resave: false,

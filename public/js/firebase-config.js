@@ -1,6 +1,11 @@
 // Firebase configuration
-// IMPORTANT: In production, move these credentials to environment variables
-// For development purposes, they are here for easy setup
+// NOTE: Firebase API keys are designed to be public and included in client-side code.
+// They identify your Firebase project and are safe to expose.
+// Security is enforced through Firebase Security Rules, not by hiding the API key.
+// For more info: https://firebase.google.com/docs/projects/api-keys
+//
+// IMPORTANT: Configure Firebase Security Rules in Firebase Console to protect your data.
+// See SECURITY.md for recommended Firestore security rules.
 const firebaseConfig = {
   apiKey: "AIzaSyAxYYiHFAgq_aEAtkxRmIFKdxoBiMB5DYE",
   authDomain: "servilimp-8b5df.firebaseapp.com",
