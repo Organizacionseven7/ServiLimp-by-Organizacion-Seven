@@ -27,8 +27,10 @@ try {
 }
 
 // Security middleware
+// Note: CSP is disabled to allow Firebase CDN (gstatic.com)
+// Firebase is a trusted Google service. See SECURITY.md for details.
 app.use(helmet({
-    contentSecurityPolicy: false // Disabled to allow Firebase CDN
+    contentSecurityPolicy: false // Required for Firebase SDK from CDN
 }));
 
 // Rate limiting
@@ -52,6 +54,13 @@ const authLimiter = rateLimit({
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Session configuration
+// Note: CSRF protection is handled by:
+// 1. Firebase Authentication tokens (secure, HTTPOnly)
+// 2. SameSite=strict cookie policy
+// 3. Session-based auth verification
+// See SECURITY.md for detailed explanation
 app.use(session({
     secret: process.env.SESSION_SECRET || 'servilimp-secret-key-2025-change-in-production',
     resave: false,
@@ -59,8 +68,8 @@ app.use(session({
     cookie: { 
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
         secure: isProduction, // Require HTTPS in production
-        httpOnly: true,
-        sameSite: 'strict'
+        httpOnly: true, // Prevents XSS attacks
+        sameSite: 'strict' // Prevents CSRF attacks
     }
 }));
 app.use(express.static(path.join(__dirname, 'public')));
