@@ -4,9 +4,12 @@ const session = require('express-session');
 const path = require('path');
 const cors = require('cors');
 const admin = require('firebase-admin');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const isProduction = process.env.NODE_ENV === 'production';
 
 // Initialize Firebase Admin (for server-side operations)
 // Note: In production, you should use a service account key file
@@ -23,6 +26,28 @@ try {
     console.log('Firebase Admin not initialized (client-side Firebase will be used):', error.message);
 }
 
+// Security middleware
+app.use(helmet({
+    contentSecurityPolicy: false // Disabled to allow Firebase CDN
+}));
+
+// Rate limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: 'Demasiadas solicitudes desde esta IP, por favor intente más tarde.'
+});
+
+// Apply rate limiting to all routes
+app.use('/api/', limiter);
+
+// Stricter rate limit for authentication
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    message: 'Demasiados intentos de inicio de sesión, por favor intente más tarde.'
+});
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
@@ -31,7 +56,12 @@ app.use(session({
     secret: process.env.SESSION_SECRET || 'servilimp-secret-key-2025-change-in-production',
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
+    cookie: { 
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        secure: isProduction, // Require HTTPS in production
+        httpOnly: true,
+        sameSite: 'strict'
+    }
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -59,7 +89,7 @@ function requireRole(...roles) {
 // ====== Session Management Routes ======
 
 // Set session after Firebase login (called from client)
-app.post('/api/set-session', async (req, res) => {
+app.post('/api/set-session', authLimiter, async (req, res) => {
     const { uid, email, role, displayName } = req.body;
     
     if (!uid) {
